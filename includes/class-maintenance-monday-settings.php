@@ -39,12 +39,26 @@ class MaintenanceMonday_Settings {
 
         // Handle test connection
         if (isset($_POST['test_connection']) && wp_verify_nonce($_POST['maintenance_monday_nonce'], 'maintenance_monday_settings')) {
-            $test_result = $this->api->test_connection();
+            try {
+                $test_result = $this->api->test_connection();
+            } catch (Exception $e) {
+                $test_result = array(
+                    'success' => false,
+                    'message' => 'Error: ' . $e->getMessage()
+                );
+            }
         }
 
         // Handle fetch sites
         if (isset($_POST['fetch_sites']) && wp_verify_nonce($_POST['maintenance_monday_nonce'], 'maintenance_monday_settings')) {
-            $sites_result = $this->api->get_sites();
+            try {
+                $sites_result = $this->api->get_sites();
+            } catch (Exception $e) {
+                $sites_result = array(
+                    'success' => false,
+                    'message' => 'Error: ' . $e->getMessage()
+                );
+            }
         }
 
         // Enqueue scripts for settings page

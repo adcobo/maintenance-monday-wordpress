@@ -89,21 +89,6 @@ class MaintenanceMonday_Settings {
         ?>
         <div class="wrap">
             <h1><?php _e('Maintenance Monday Settings', 'maintenance-monday'); ?></h1>
-            
-            <?php
-            // Debug information
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                echo '<div class="notice notice-info is-dismissible">';
-                echo '<p><strong>Debug Info:</strong></p>';
-                echo '<ul>';
-                echo '<li>API Class: ' . (class_exists('MaintenanceMonday_API') ? 'Loaded' : 'Not Loaded') . '</li>';
-                echo '<li>API Instance: ' . (isset($this->api) ? 'Created' : 'Not Created') . '</li>';
-                echo '<li>API Methods: ' . (method_exists($this->api, 'test_connection') ? 'test_connection exists' : 'test_connection missing') . '</li>';
-                echo '<li>API Methods: ' . (method_exists($this->api, 'get_sites') ? 'get_sites exists' : 'get_sites missing') . '</li>';
-                echo '</ul>';
-                echo '</div>';
-            }
-            ?>
 
             <?php if (isset($test_result)): ?>
                 <div class="notice <?php echo $test_result['success'] ? 'notice-success' : 'notice-error'; ?> is-dismissible">

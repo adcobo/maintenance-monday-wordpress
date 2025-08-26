@@ -85,6 +85,10 @@ jobs:
         git add maintenance-monday.php
         git commit -m "Bump version to ${{ steps.get_version.outputs.version }} [skip ci]"
         git push origin HEAD:${{ github.ref }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Continue even if push fails (version bump is still applied to the build)
+      continue-on-error: true
         
     - name: Create zip file
       run: |

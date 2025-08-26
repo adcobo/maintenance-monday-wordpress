@@ -115,3 +115,19 @@ define('MAINTENANCE_MONDAY_GITHUB_REPO', 'maintenance-monday'); // Your reposito
 - WordPress 5.0+
 - PHP 7.4+
 - GitHub repository with Actions enabled
+
+## GitHub Actions Setup
+
+### Workflow Permissions
+
+The workflow automatically bumps version numbers but may not have permission to push back to the repository. This is normal and won't affect the build process.
+
+**To enable auto-push of version bumps:**
+
+1. Go to your repository **Settings** → **Actions** → **General**
+2. Scroll down to **Workflow permissions**
+3. Select **Read and write permissions**
+4. Check **Allow GitHub Actions to create and approve pull requests**
+5. Click **Save**
+
+**Note**: Version bumps are still applied to the build even if the push fails.

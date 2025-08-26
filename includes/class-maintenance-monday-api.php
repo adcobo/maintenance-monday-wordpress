@@ -73,7 +73,14 @@ class MaintenanceMonday_API {
         $api_url = get_option('maintenance_monday_api_url');
         $site_id = get_option('maintenance_monday_site_id');
         
+        // Debug: Log the values we're working with
+        error_log('Maintenance Monday API: update_laravel_status called');
+        error_log('Maintenance Monday API: api_key = ' . (!empty($api_key) ? 'set' : 'empty'));
+        error_log('Maintenance Monday API: api_url = ' . $api_url);
+        error_log('Maintenance Monday API: site_id = ' . $site_id);
+        
         if (empty($api_key) || empty($api_url) || empty($site_id)) {
+            error_log('Maintenance Monday API: Missing required data - api_key: ' . (!empty($api_key) ? 'set' : 'empty') . ', api_url: ' . (!empty($api_url) ? 'set' : 'empty') . ', site_id: ' . (!empty($site_id) ? 'set' : 'empty'));
             return false;
         }
         
@@ -85,6 +92,9 @@ class MaintenanceMonday_API {
             'message' => 'Plugin active and connected',
         );
         
+        error_log('Maintenance Monday API: Sending status data: ' . wp_json_encode($status_data));
+        error_log('Maintenance Monday API: Making request to: ' . $api_url . '/api/wordpress/plugin-status');
+        
         $response = wp_remote_post($api_url . '/api/wordpress/plugin-status', array(
             'headers' => array(
                 'Authorization' => 'Bearer ' . $api_key,
@@ -95,10 +105,16 @@ class MaintenanceMonday_API {
         ));
         
         if (is_wp_error($response)) {
+            error_log('Maintenance Monday API: wp_remote_post failed: ' . $response->get_error_message());
             return false;
         }
         
         $response_code = wp_remote_retrieve_response_code($response);
+        $response_body = wp_remote_retrieve_body($response);
+        
+        error_log('Maintenance Monday API: Response code: ' . $response_code);
+        error_log('Maintenance Monday API: Response body: ' . $response_body);
+        
         return $response_code === 200;
     }
     

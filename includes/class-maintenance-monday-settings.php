@@ -258,7 +258,14 @@ class MaintenanceMonday_Settings {
 
         // If a site is selected, update Laravel with the new status
         if (!empty($site_id)) {
+            // Debug: Log what we're trying to do
+            error_log('Maintenance Monday: Attempting to update Laravel status for site_id: ' . $site_id);
+            
             $update_result = $this->api->update_laravel_status();
+            
+            // Debug: Log the result
+            error_log('Maintenance Monday: Laravel status update result: ' . ($update_result ? 'true' : 'false'));
+            
             if ($update_result) {
                 add_settings_error(
                     'maintenance-monday',
@@ -275,6 +282,9 @@ class MaintenanceMonday_Settings {
                 );
             }
         } else {
+            // Debug: Log when no site is selected
+            error_log('Maintenance Monday: No site selected, skipping Laravel status update');
+            
             // Show success message
             add_settings_error(
                 'maintenance-monday',

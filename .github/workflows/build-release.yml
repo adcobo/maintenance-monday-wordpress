@@ -1,0 +1,131 @@
+name: Build and Release Plugin
+
+on:
+  push:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.1'
+        
+    - name: Get current version and bump it
+      id: get_version
+      run: |
+        # Get current version from plugin file
+        CURRENT_VERSION=$(grep "Version:" maintenance-monday.php | sed 's/.*Version: //' | tr -d ' ')
+        echo "Current version: $CURRENT_VERSION"
+        
+        # Split version into parts (e.g., 1.0.0 -> 1 0 0)
+        IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
+        MAJOR=${VERSION_PARTS[0]}
+        MINOR=${VERSION_PARTS[1]}
+        PATCH=${VERSION_PARTS[2]}
+        
+        # Check commit message for conventional commit types and version bump
+        COMMIT_MSG="${{ github.event.head_commit.message }}"
+        
+        if [[ "$COMMIT_MSG" =~ ^feat.* ]] || [[ "$COMMIT_MSG" == *"[minor]"* ]]; then
+          # New feature = minor version bump
+          NEW_MINOR=$((MINOR + 1))
+          NEW_VERSION="$MAJOR.$NEW_MINOR.0"
+          echo "Minor version bump (feat) detected: $NEW_VERSION"
+        elif [[ "$COMMIT_MSG" =~ ^fix.* ]] || [[ "$COMMIT_MSG" =~ ^sec.* ]] || [[ "$COMMIT_MSG" =~ ^perf.* ]]; then
+          # Bug fix, security fix, or performance improvement = patch version bump
+          NEW_PATCH=$((PATCH + 1))
+          NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+          echo "Patch version bump (fix/sec/perf) detected: $NEW_VERSION"
+        elif [[ "$COMMIT_MSG" =~ ^BREAKING\ CHANGE.* ]] || [[ "$COMMIT_MSG" == *"[major]"* ]] || [[ "$COMMIT_MSG" =~ ^refactor.* ]]; then
+          # Breaking changes or major refactor = major version bump
+          NEW_MAJOR=$((MAJOR + 1))
+          NEW_VERSION="$NEW_MAJOR.0.0"
+          echo "Major version bump (breaking change/refactor) detected: $NEW_VERSION"
+        else
+          # Default: increment patch version for other changes
+          NEW_PATCH=$((PATCH + 1))
+          NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+          echo "Patch version bump (default) detected: $NEW_VERSION"
+        fi
+        
+        echo "New version: $NEW_VERSION"
+        echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+        
+        # Update the plugin file with new version
+        sed -i "s/Version: $CURRENT_VERSION/Version: $NEW_VERSION/" maintenance-monday.php
+        sed -i "s/define('MAINTENANCE_MONDAY_VERSION', '$CURRENT_VERSION');/define('MAINTENANCE_MONDAY_VERSION', '$NEW_VERSION');/" maintenance-monday.php
+        
+        echo "Updated plugin file to version $NEW_VERSION"
+        
+    - name: Create plugin directory
+      run: |
+        mkdir -p maintenance-monday
+        
+    - name: Copy plugin files
+      run: |
+        cp -r includes/ maintenance-monday/
+        cp -r assets/ maintenance-monday/
+        cp maintenance-monday.php maintenance-monday/
+        cp README.md maintenance-monday/
+        # Ensure all PHP files are included for the updater
+        find includes/ -name "*.php" -exec cp {} maintenance-monday/includes/ \;
+        
+    - name: Commit and push version bump
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add maintenance-monday.php
+        git commit -m "Bump version to ${{ steps.get_version.outputs.version }} [skip ci]"
+        git push origin HEAD:${{ github.ref }}
+        
+    - name: Create zip file
+      run: |
+        zip -r maintenance-monday-${{ steps.get_version.outputs.version }}.zip maintenance-monday/
+        
+    - name: Upload zip as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: maintenance-monday-plugin
+        path: maintenance-monday-${{ steps.get_version.outputs.version }}.zip
+        
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ steps.get_version.outputs.version }}
+        release_name: Maintenance Monday v${{ steps.get_version.outputs.version }}
+        body: |
+          ## Maintenance Monday WordPress Plugin v${{ steps.get_version.outputs.version }}
+          
+          ### What's New
+          - Plugin updates and improvements
+          
+          ### Installation
+          1. Download the zip file
+          2. Upload to WordPress admin > Plugins > Add New > Upload Plugin
+          3. Activate the plugin
+          
+          ### Download
+          The plugin zip file is attached to this release.
+        draft: false
+        prerelease: false
+        
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./maintenance-monday-${{ steps.get_version.outputs.version }}.zip
+        asset_name: maintenance-monday-${{ steps.get_version.outputs.version }}.zip
+        asset_content_type: application/zip

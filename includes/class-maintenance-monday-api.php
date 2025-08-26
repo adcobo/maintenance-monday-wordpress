@@ -73,14 +73,7 @@ class MaintenanceMonday_API {
         $api_url = get_option('maintenance_monday_api_url');
         $site_id = get_option('maintenance_monday_site_id');
         
-        // Debug: Log the values we're working with
-        error_log('Maintenance Monday API: update_laravel_status called');
-        error_log('Maintenance Monday API: api_key = ' . (!empty($api_key) ? 'set' : 'empty'));
-        error_log('Maintenance Monday API: api_url = ' . $api_url);
-        error_log('Maintenance Monday API: site_id = ' . $site_id);
-        
         if (empty($api_key) || empty($api_url) || empty($site_id)) {
-            error_log('Maintenance Monday API: Missing required data - api_key: ' . (!empty($api_key) ? 'set' : 'empty') . ', api_url: ' . (!empty($api_url) ? 'set' : 'empty') . ', site_id: ' . (!empty($site_id) ? 'set' : 'empty'));
             return false;
         }
         
@@ -92,9 +85,6 @@ class MaintenanceMonday_API {
             'message' => 'Plugin active and connected',
         );
         
-        error_log('Maintenance Monday API: Sending status data: ' . wp_json_encode($status_data));
-        error_log('Maintenance Monday API: Making request to: ' . $api_url . '/api/wordpress/plugin-status');
-        
         $response = wp_remote_post($api_url . '/api/wordpress/plugin-status', array(
             'headers' => array(
                 'Authorization' => 'Bearer ' . $api_key,
@@ -105,15 +95,10 @@ class MaintenanceMonday_API {
         ));
         
         if (is_wp_error($response)) {
-            error_log('Maintenance Monday API: wp_remote_post failed: ' . $response->get_error_message());
             return false;
         }
         
         $response_code = wp_remote_retrieve_response_code($response);
-        $response_body = wp_remote_retrieve_body($response);
-        
-        error_log('Maintenance Monday API: Response code: ' . $response_code);
-        error_log('Maintenance Monday API: Response body: ' . $response_body);
         
         return $response_code === 200;
     }
@@ -232,6 +217,104 @@ class MaintenanceMonday_API {
         } else {
             $error_data = json_decode($body, true);
             $error_message = isset($error_data['message']) ? $error_data['message'] : sprintf(__('Failed to fetch sites. Status: %d', 'maintenance-monday'), $response_code);
+            
+            return array(
+                'success' => false,
+                'message' => $error_message
+            );
+        }
+    }
+
+    /**
+     * Get a specific site from Laravel API
+     */
+    public function get_site($site_id) {
+        $api_url = get_option('maintenance_monday_api_url');
+        $api_key = get_option('maintenance_monday_api_key');
+        
+        if (empty($api_url) || empty($api_key)) {
+            return array(
+                'success' => false,
+                'message' => __('API URL and API Key are required', 'maintenance-monday')
+            );
+        }
+
+        $response = wp_remote_get($api_url . '/api/sites/' . $site_id, array(
+            'headers' => array(
+                'Authorization' => 'Bearer ' . $api_key,
+                'Accept' => 'application/json',
+            ),
+            'timeout' => 15,
+        ));
+
+        if (is_wp_error($response)) {
+            return array(
+                'success' => false,
+                'message' => $response->get_error_message()
+            );
+        }
+
+        $response_code = wp_remote_retrieve_response_code($response);
+        $body = wp_remote_retrieve_body($response);
+
+        if ($response_code === 200) {
+            $data = json_decode($body, true);
+            return array(
+                'success' => true,
+                'data' => $data
+            );
+        } else {
+            $error_data = json_decode($body, true);
+            $error_message = isset($error_data['message']) ? $error_data['message'] : sprintf(__('Failed to fetch site. Status: %d', 'maintenance-monday'), $response_code);
+            
+            return array(
+                'success' => false,
+                'message' => $error_message
+            );
+        }
+    }
+
+    /**
+     * Get tags from Laravel API
+     */
+    public function get_tags() {
+        $api_url = get_option('maintenance_monday_api_url');
+        $api_key = get_option('maintenance_monday_api_key');
+        
+        if (empty($api_url) || empty($api_key)) {
+            return array(
+                'success' => false,
+                'message' => __('API URL and API Key are required', 'maintenance-monday')
+            );
+        }
+
+        $response = wp_remote_get($api_url . '/api/tags', array(
+            'headers' => array(
+                'Authorization' => 'Bearer ' . $api_key,
+                'Accept' => 'application/json',
+            ),
+            'timeout' => 15,
+        ));
+
+        if (is_wp_error($response)) {
+            return array(
+                'success' => false,
+                'message' => $response->get_error_message()
+            );
+        }
+
+        $response_code = wp_remote_retrieve_response_code($response);
+        $body = wp_remote_retrieve_body($response);
+
+        if ($response_code === 200) {
+            $data = json_decode($body, true);
+            return array(
+                'success' => true,
+                'data' => $data
+            );
+        } else {
+            $error_data = json_decode($body, true);
+            $error_message = isset($error_data['message']) ? $error_data['message'] : sprintf(__('Failed to fetch tags. Status: %d', 'maintenance-monday'), $response_code);
             
             return array(
                 'success' => false,

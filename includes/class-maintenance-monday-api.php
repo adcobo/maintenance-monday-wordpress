@@ -322,6 +322,106 @@ class MaintenanceMonday_API {
             );
         }
     }
+
+    /**
+     * Send update to Laravel API
+     */
+    public function send_update($update_data) {
+        $api_url = get_option('maintenance_monday_api_url');
+        $api_key = get_option('maintenance_monday_api_key');
+        
+        if (empty($api_url) || empty($api_key)) {
+            return array(
+                'success' => false,
+                'message' => __('API URL and API Key are required', 'maintenance-monday')
+            );
+        }
+
+        $response = wp_remote_post($api_url . '/api/updates', array(
+            'headers' => array(
+                'Authorization' => 'Bearer ' . $api_key,
+                'Content-Type' => 'application/json',
+            ),
+            'body' => wp_json_encode($update_data),
+            'timeout' => 15,
+        ));
+
+        if (is_wp_error($response)) {
+            return array(
+                'success' => false,
+                'message' => $response->get_error_message()
+            );
+        }
+
+        $response_code = wp_remote_retrieve_response_code($response);
+        $body = wp_remote_retrieve_body($response);
+
+        if ($response_code === 200 || $response_code === 201) {
+            $data = json_decode($body, true);
+            return array(
+                'success' => true,
+                'message' => __('Update sent successfully', 'maintenance-monday'),
+                'data' => $data
+            );
+        } else {
+            $error_data = json_decode($body, true);
+            $error_message = isset($error_data['message']) ? $error_data['message'] : sprintf(__('Failed to send update. Status: %d', 'maintenance-monday'), $response_code);
+            
+            return array(
+                'success' => false,
+                'message' => $error_message
+            );
+        }
+    }
+
+    /**
+     * Get PHP version info from Laravel API
+     */
+    public function get_php_version_info($version) {
+        $api_url = get_option('maintenance_monday_api_url');
+        $api_key = get_option('maintenance_monday_api_key');
+        
+        if (empty($api_url) || empty($api_key)) {
+            return array(
+                'success' => false,
+                'message' => __('API URL and API Key are required', 'maintenance-monday')
+            );
+        }
+
+        $response = wp_remote_get($api_url . '/api/php-version-info?version=' . urlencode($version), array(
+            'headers' => array(
+                'Authorization' => 'Bearer ' . $api_key,
+                'Accept' => 'application/json',
+            ),
+            'timeout' => 15,
+        ));
+
+        if (is_wp_error($response)) {
+            return array(
+                'success' => false,
+                'message' => $response->get_error_message()
+            );
+        }
+
+        $response_code = wp_remote_retrieve_response_code($response);
+        $body = wp_remote_retrieve_body($response);
+
+        if ($response_code === 200) {
+            $data = json_decode($body, true);
+            return array(
+                'success' => true,
+                'data' => $data
+            );
+        } else {
+            $error_data = json_decode($body, true);
+            $error_message = isset($error_data['message']) ? $error_data['message'] : sprintf(__('Failed to fetch PHP version info. Status: %d', 'maintenance-monday'), $response_code);
+            
+            return array(
+                'success' => false,
+                'message' => $error_message
+            );
+        }
+    }
 }
 
 // Initialize the API

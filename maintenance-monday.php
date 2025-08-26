@@ -21,10 +21,12 @@ define('MAINTENANCE_MONDAY_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('MAINTENANCE_MONDAY_PLUGIN_PATH', plugin_dir_path(__FILE__));
 
 // Include required files
+require_once MAINTENANCE_MONDAY_PLUGIN_PATH . 'includes/plugin-config.php';
 require_once MAINTENANCE_MONDAY_PLUGIN_PATH . 'includes/class-maintenance-monday-api.php';
 require_once MAINTENANCE_MONDAY_PLUGIN_PATH . 'includes/class-maintenance-monday-dashboard.php';
 require_once MAINTENANCE_MONDAY_PLUGIN_PATH . 'includes/class-maintenance-monday-settings.php';
 require_once MAINTENANCE_MONDAY_PLUGIN_PATH . 'includes/class-maintenance-monday-ajax.php';
+require_once MAINTENANCE_MONDAY_PLUGIN_PATH . 'includes/class-maintenance-monday-updater.php';
 
 /**
  * Main plugin class
@@ -52,6 +54,7 @@ class MaintenanceMonday {
     private function __construct() {
         $this->init_hooks();
         $this->init_ajax_handler();
+        $this->init_updater();
     }
 
     /**
@@ -71,6 +74,13 @@ class MaintenanceMonday {
         if (is_admin()) {
             new MaintenanceMonday_AJAX();
         }
+    }
+
+    /**
+     * Initialize plugin updater
+     */
+    private function init_updater() {
+        new MaintenanceMonday_Updater(__FILE__);
     }
 
     /**

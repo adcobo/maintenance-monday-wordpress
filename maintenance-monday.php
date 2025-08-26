@@ -186,7 +186,7 @@ function maintenance_monday_activate() {
     }
 
     // Create default options with pre-populated values
-    add_option('maintenance_monday_api_url', 'https://maintenance-monday.test');
+    add_option('maintenance_monday_api_url', 'https://maintenance.adcobo.com');
     add_option('maintenance_monday_api_key', 'mm_f1N9yRZYZs7DTBF2CThpusTXReDjWrl6');
     add_option('maintenance_monday_site_id', '');
     add_option('maintenance_monday_enabled', '1'); // Enable by default

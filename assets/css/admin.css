@@ -1,0 +1,387 @@
+/* Maintenance Monday Admin Styles */
+
+#maintenance-monday-widget {
+    max-width: 100%;
+}
+
+.maintenance-monday-form-group {
+    margin-bottom: 15px;
+}
+.maintenance-monday-tag-item {
+    display:flex;
+    align-items: center;
+    gap: 5px;
+  
+}
+
+.maintenance-monday-form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    font-size: 13px;
+    color: #23282d;
+}
+
+.maintenance-monday-form-group input[type="text"],
+.maintenance-monday-form-group input[type="password"],
+.maintenance-monday-form-group select,
+.maintenance-monday-form-group textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 13px;
+    line-height: 1.4;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.maintenance-monday-form-group input[type="text"]:focus,
+.maintenance-monday-form-group input[type="password"]:focus,
+.maintenance-monday-form-group select:focus,
+.maintenance-monday-form-group textarea:focus {
+    outline: none;
+    border-color: #007cba;
+    box-shadow: 0 0 0 1px #007cba;
+}
+
+.maintenance-monday-form-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.maintenance-monday-form-row .maintenance-monday-form-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.maintenance-monday-form-actions {
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+    margin-top: 15px;
+    position: relative;
+}
+
+.maintenance-monday-form-actions .button {
+    min-width: 120px;
+}
+
+#update-status {
+    color: #666;
+    font-style: italic;
+    vertical-align: middle;
+}
+
+#update-status .spinner {
+    float: none;
+    display: inline-block;
+    margin-right: 5px;
+    margin-top: 2px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .maintenance-monday-form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .maintenance-monday-form-row .maintenance-monday-form-group {
+        margin-bottom: 15px;
+    }
+}
+
+/* Success/Error message styling */
+.notice-success {
+    border-left-color: #46b450;
+}
+
+.notice-error {
+    border-left-color: #dc3232;
+}
+
+/* Widget styling */
+#maintenance_monday_updates .inside {
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+#maintenance_monday_updates h3 {
+    margin-top: 0;
+    color: #23282d;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+/* Loading states */
+.maintenance-monday-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.maintenance-monday-loading .button {
+    position: relative;
+}
+
+.maintenance-monday-loading .button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid transparent;
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: button-loading-spinner 1s ease infinite;
+}
+
+@keyframes button-loading-spinner {
+    from {
+        transform: rotate(0turn);
+    }
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+/* Site Status Styling */
+#site-status-section {
+    display: none;
+    margin-bottom: 15px;
+}
+
+.maintenance-monday-site-status {
+    background: #f8f9fa;
+    border: 1px solid #e1e5e9;
+    border-radius: 4px;
+    padding: 12px;
+}
+
+.maintenance-monday-site-status h4 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #23282d;
+}
+
+.maintenance-monday-last-update {
+    font-size: 13px;
+    line-height: 1.4;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.maintenance-monday-last-update > * {
+    display: block;
+    margin: 0;
+}
+
+.maintenance-monday-update-status {
+    display: block;
+    width: fit-content;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.maintenance-monday-update-status.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.maintenance-monday-update-status.warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.maintenance-monday-update-status.danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.maintenance-monday-update-status.gray {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    border: 1px solid #dee2e6;
+}
+
+.maintenance-monday-update-date {
+    display: block;
+    color: #666;
+    font-style: italic;
+    margin-bottom: 4px;
+}
+
+.maintenance-monday-update-message {
+    display: block;
+    margin-top: 5px;
+    padding-top: 5px;
+    border-top: 1px solid #e1e5e9;
+}
+
+.maintenance-monday-php-version {
+    display: block;
+    margin-top: 8px;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.maintenance-monday-php-version strong {
+    font-weight: 600;
+}
+
+.maintenance-monday-php-version small {
+    display: block;
+    margin-top: 2px;
+    opacity: 0.8;
+}
+
+.maintenance-monday-php-advice {
+    font-style: italic !important;
+    opacity: 0.9 !important;
+    margin-top: 4px !important;
+    padding-top: 2px !important;
+    border-top: 1px solid rgba(0,0,0,0.1) !important;
+}
+
+.maintenance-monday-current-php {
+    display: block;
+    margin-top: 6px;
+    padding: 6px 8px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+    font-size: 11px;
+    color: #495057;
+}
+
+.maintenance-monday-current-php strong {
+    color: #007cba;
+}
+
+
+
+
+
+/* Tag List Styling */
+.maintenance-monday-tag-list {
+    max-height: 120px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 8px;
+    background: #f9f9f9;
+    border-radius: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: flex-start;
+}
+
+.maintenance-monday-tag-item {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 4px 8px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.2s ease;
+}
+
+.maintenance-monday-tag-item:hover {
+    background: #f0f8ff;
+    border-color: #007cba;
+}
+
+.maintenance-monday-tag-item input[type="checkbox"] {
+    margin: 0 4px 0 0;
+    flex-shrink: 0;
+}
+
+.maintenance-monday-tag-item label {
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+    flex-grow: 1;
+}
+
+.maintenance-monday-tag-item input[type="checkbox"]:checked + label {
+    color: #007cba;
+    font-weight: 600;
+}
+
+/* Form Actions Styling */
+.maintenance-monday-form-actions {
+    margin-top: 15px;
+}
+
+/* Spinner Styling */
+.spinner {
+    float: none;
+    margin: 0 5px 0 0;
+}
+
+/* Connected Site Info Styling */
+.maintenance-monday-site-info {
+    background: #f8f9fa !important;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 4px !important;
+    padding: 10px !important;
+    margin-bottom: 15px !important;
+    font-size: 12px !important;
+    color: #495057 !important;
+}
+
+.maintenance-monday-site-info strong {
+    font-weight: 600 !important;
+    color: #23282d !important;
+}
+
+.maintenance-monday-site-info a {
+    color: #007cba !important;
+    text-decoration: none !important;
+}
+
+.maintenance-monday-site-info a:hover {
+    text-decoration: underline !important;
+}
+
+.maintenance-monday-site-info div {
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+}
+
+/* Status icons */
+.maintenance-monday-site-info .dashicons {
+    width: 16px !important;
+    height: 16px !important;
+    font-size: 16px !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .maintenance-monday-site-info {
+        font-size: 11px !important;
+        padding: 8px !important;
+    }
+}

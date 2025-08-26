@@ -47,6 +47,9 @@ class MaintenanceMonday_Updater {
         
         // Add settings link to show current version info
         add_action('admin_notices', array($this, 'version_info_notice'));
+        
+        // Add debug info for troubleshooting
+        add_action('admin_notices', array($this, 'debug_info_notice'));
     }
     
     /**
@@ -238,5 +241,36 @@ class MaintenanceMonday_Updater {
             echo '<p><strong>Maintenance Monday:</strong> A new version (' . esc_html($latest_version) . ') is available. <a href="' . admin_url('plugins.php') . '">Update now</a> or <a href="' . admin_url('update-core.php') . '">check for updates</a>.</p>';
             echo '</div>';
         }
+    }
+    
+    /**
+     * Show debug information for troubleshooting
+     */
+    public function debug_info_notice() {
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+        
+        // Only show on plugin pages
+        $screen = get_current_screen();
+        if (!$screen || !in_array($screen->id, ['plugins', 'dashboard', 'options-general'])) {
+            return;
+        }
+        
+        $current_version = get_plugin_data($this->plugin_file)['Version'];
+        $latest_version = $this->get_latest_version();
+        
+        echo '<div class="notice notice-info is-dismissible">';
+        echo '<p><strong>Maintenance Monday Debug Info:</strong></p>';
+        echo '<ul>';
+        echo '<li>Current Version: ' . esc_html($current_version) . '</li>';
+        echo '<li>Latest Version from GitHub: ' . esc_html($latest_version ?: 'Could not fetch') . '</li>';
+        echo '<li>GitHub Repo: ' . esc_html($this->github_username . '/' . $this->github_repo) . '</li>';
+        echo '<li>Plugin Slug: ' . esc_html($this->plugin_slug) . '</li>';
+        if ($latest_version) {
+            echo '<li>Update Available: ' . (version_compare($latest_version, $current_version, '>') ? 'Yes' : 'No') . '</li>';
+        }
+        echo '</ul>';
+        echo '</div>';
     }
 }

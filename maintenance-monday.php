@@ -3,7 +3,7 @@
  * Plugin Name: Maintenance Monday
  * Plugin URI: https://adcobo.com
  * Description: Connect your WordPress site to adcobo Maintenance Monday.
- * Version: 1.0.0
+ * Version: 1.0.3
  * Author: adcobo ApS
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('MAINTENANCE_MONDAY_VERSION', '1.0.0');
+define('MAINTENANCE_MONDAY_VERSION', '1.0.3');
 define('MAINTENANCE_MONDAY_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('MAINTENANCE_MONDAY_PLUGIN_PATH', plugin_dir_path(__FILE__));
 
@@ -65,6 +65,7 @@ class MaintenanceMonday {
         add_action('admin_menu', array($this, 'add_admin_menu'));
         add_action('wp_dashboard_setup', array($this, 'add_dashboard_widget'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
+        add_action('admin_init', array($this, 'update_laravel_status_on_activation'));
     }
 
     /**
@@ -81,6 +82,14 @@ class MaintenanceMonday {
      */
     private function init_updater() {
         new MaintenanceMonday_Updater(__FILE__);
+    }
+
+    /**
+     * Update Laravel status when plugin is activated
+     */
+    public function update_laravel_status_on_activation() {
+        $api = new MaintenanceMonday_API();
+        $api->update_laravel_status();
     }
 
     /**

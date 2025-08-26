@@ -65,6 +65,7 @@ class MaintenanceMonday {
         add_action('admin_menu', array($this, 'add_admin_menu'));
         add_action('wp_dashboard_setup', array($this, 'add_dashboard_widget'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
+        add_action('admin_init', array($this, 'update_laravel_status_on_activation'));
     }
 
     /**
@@ -81,6 +82,14 @@ class MaintenanceMonday {
      */
     private function init_updater() {
         new MaintenanceMonday_Updater(__FILE__);
+    }
+
+    /**
+     * Update Laravel status when plugin is activated
+     */
+    public function update_laravel_status_on_activation() {
+        $api = new MaintenanceMonday_API();
+        $api->update_laravel_status();
     }
 
     /**

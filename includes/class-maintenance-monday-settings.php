@@ -66,9 +66,9 @@ class MaintenanceMonday_Settings {
             )
         ));
 
-        // Get current settings with defaults (in case plugin was already activated)
-        $api_url = get_option('maintenance_monday_api_url', 'http://localhost:8000');
-        $api_key = get_option('maintenance_monday_api_key', 'mm_f1N9yRZYZs7DTBF2CThpusTXReDjWrl6');
+        // Get current settings
+        $api_url = get_option('maintenance_monday_api_url');
+        $api_key = get_option('maintenance_monday_api_key');
         $site_id = get_option('maintenance_monday_site_id', '');
         $enabled = get_option('maintenance_monday_enabled', '1');
 
@@ -110,7 +110,7 @@ class MaintenanceMonday_Settings {
                             <label for="maintenance_monday_api_url"><?php _e('API URL', 'maintenance-monday'); ?></label>
                         </th>
                         <td>
-                            <input type="url" id="maintenance_monday_api_url" name="maintenance_monday_api_url" value="<?php echo esc_attr($api_url ?: 'http://localhost:8000'); ?>" class="regular-text" placeholder="http://localhost:8000" />
+                            <input type="url" id="maintenance_monday_api_url" name="maintenance_monday_api_url" value="<?php echo esc_attr($api_url); ?>" class="regular-text" />
                             <p class="description"><?php _e('URL for your Maintenance Monday API', 'maintenance-monday'); ?></p>
                         </td>
                     </tr>
@@ -120,7 +120,7 @@ class MaintenanceMonday_Settings {
                             <label for="maintenance_monday_api_key"><?php _e('API Key', 'maintenance-monday'); ?></label>
                         </th>
                         <td>
-                            <input type="password" id="maintenance_monday_api_key" name="maintenance_monday_api_key" value="<?php echo esc_attr($api_key ?: 'mm_f1N9yRZYZs7DTBF2CThpusTXReDjWrl6'); ?>" class="regular-text" />
+                            <input type="password" id="maintenance_monday_api_key" name="maintenance_monday_api_key" value="<?php echo esc_attr($api_key); ?>" class="regular-text" />
                             <p class="description"><?php _e('API key for Maintenance Monday', 'maintenance-monday'); ?></p>
                         </td>
                     </tr>
@@ -217,12 +217,24 @@ class MaintenanceMonday_Settings {
         $api_key = sanitize_text_field($_POST['maintenance_monday_api_key'] ?? '');
         $site_id = sanitize_text_field($_POST['maintenance_monday_site_id'] ?? '');
 
-        // Use defaults if fields are empty
+        // Validate required fields
         if (empty($api_url)) {
-            $api_url = 'http://localhost:8000';
+            add_settings_error(
+                'maintenance-monday',
+                'api_url_required',
+                __('API URL is required.', 'maintenance-monday'),
+                'error'
+            );
+            return;
         }
         if (empty($api_key)) {
-            $api_key = 'mm_f1N9yRZYZs7DTBF2CThpusTXReDjWrl6';
+            add_settings_error(
+                'maintenance-monday',
+                'api_key_required',
+                __('API Key is required.', 'maintenance-monday'),
+                'error'
+            );
+            return;
         }
 
         update_option('maintenance_monday_enabled', $enabled);

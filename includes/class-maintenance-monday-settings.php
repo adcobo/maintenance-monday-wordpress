@@ -256,12 +256,32 @@ class MaintenanceMonday_Settings {
         update_option('maintenance_monday_api_key', $api_key);
         update_option('maintenance_monday_site_id', $site_id);
 
-        // Show success message
-        add_settings_error(
-            'maintenance-monday',
-            'settings_updated',
-            __('Settings saved successfully!', 'maintenance-monday'),
-            'success'
-        );
+        // If a site is selected, update Laravel with the new status
+        if (!empty($site_id)) {
+            $update_result = $this->api->update_laravel_status();
+            if ($update_result) {
+                add_settings_error(
+                    'maintenance-monday',
+                    'laravel_updated',
+                    __('Settings saved and Laravel status updated successfully!', 'maintenance-monday'),
+                    'success'
+                );
+            } else {
+                add_settings_error(
+                    'maintenance-monday',
+                    'laravel_update_failed',
+                    __('Settings saved, but failed to update Laravel status. Please check your API configuration.', 'maintenance-monday'),
+                    'warning'
+                );
+            }
+        } else {
+            // Show success message
+            add_settings_error(
+                'maintenance-monday',
+                'settings_updated',
+                __('Settings saved successfully!', 'maintenance-monday'),
+                'success'
+            );
+        }
     }
 }

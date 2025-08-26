@@ -3,7 +3,7 @@
  * Plugin Name: Maintenance Monday
  * Plugin URI: https://adcobo.com
  * Description: Connect your WordPress site to adcobo Maintenance Monday.
- * Version: 1.0.3
+ * Version: 1.0.9
  * Author: adcobo ApS
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('MAINTENANCE_MONDAY_VERSION', '1.0.3');
+define('MAINTENANCE_MONDAY_VERSION', '1.0.9');
 define('MAINTENANCE_MONDAY_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('MAINTENANCE_MONDAY_PLUGIN_PATH', plugin_dir_path(__FILE__));
 

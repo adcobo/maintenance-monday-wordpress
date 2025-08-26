@@ -123,6 +123,106 @@ class MaintenanceMonday_API {
         $stored_key = get_option('maintenance_monday_api_key');
         return $token === $stored_key;
     }
+
+    /**
+     * Test connection to Laravel API
+     */
+    public function test_connection() {
+        $api_url = get_option('maintenance_monday_api_url');
+        $api_key = get_option('maintenance_monday_api_key');
+        
+        if (empty($api_url) || empty($api_key)) {
+            return array(
+                'success' => false,
+                'message' => __('API URL and API Key are required', 'maintenance-monday')
+            );
+        }
+
+        $response = wp_remote_get($api_url . '/api/test-connection', array(
+            'headers' => array(
+                'Authorization' => 'Bearer ' . $api_key,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ),
+            'timeout' => 15,
+        ));
+
+        if (is_wp_error($response)) {
+            return array(
+                'success' => false,
+                'message' => $response->get_error_message()
+            );
+        }
+
+        $response_code = wp_remote_retrieve_response_code($response);
+        $body = wp_remote_retrieve_body($response);
+
+        if ($response_code === 200) {
+            $data = json_decode($body, true);
+            return array(
+                'success' => true,
+                'message' => __('Connection successful!', 'maintenance-monday'),
+                'data' => $data
+            );
+        } else {
+            $error_data = json_decode($body, true);
+            $error_message = isset($error_data['message']) ? $error_data['message'] : sprintf(__('Connection failed with status %d', 'maintenance-monday'), $response_code);
+            
+            return array(
+                'success' => false,
+                'message' => $error_message
+            );
+        }
+    }
+
+    /**
+     * Get available sites from Laravel API
+     */
+    public function get_sites() {
+        $api_url = get_option('maintenance_monday_api_url');
+        $api_key = get_option('maintenance_monday_api_key');
+        
+        if (empty($api_url) || empty($api_key)) {
+            return array(
+                'success' => false,
+                'message' => __('API URL and API Key are required', 'maintenance-monday')
+            );
+        }
+
+        $response = wp_remote_get($api_url . '/api/sites', array(
+            'headers' => array(
+                'Authorization' => 'Bearer ' . $api_key,
+                'Accept' => 'application/json',
+            ),
+            'timeout' => 15,
+        ));
+
+        if (is_wp_error($response)) {
+            return array(
+                'success' => false,
+                'message' => $response->get_error_message()
+            );
+        }
+
+        $response_code = wp_remote_retrieve_response_code($response);
+        $body = wp_remote_retrieve_body($response);
+
+        if ($response_code === 200) {
+            $data = json_decode($body, true);
+            return array(
+                'success' => true,
+                'data' => $data
+            );
+        } else {
+            $error_data = json_decode($body, true);
+            $error_message = isset($error_data['message']) ? $error_data['message'] : sprintf(__('Failed to fetch sites. Status: %d', 'maintenance-monday'), $response_code);
+            
+            return array(
+                'success' => false,
+                'message' => $error_message
+            );
+        }
+    }
 }
 
 // Initialize the API

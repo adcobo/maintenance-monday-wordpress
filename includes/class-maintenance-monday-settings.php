@@ -39,12 +39,26 @@ class MaintenanceMonday_Settings {
 
         // Handle test connection
         if (isset($_POST['test_connection']) && wp_verify_nonce($_POST['maintenance_monday_nonce'], 'maintenance_monday_settings')) {
-            $test_result = $this->api->test_connection();
+            try {
+                $test_result = $this->api->test_connection();
+            } catch (Exception $e) {
+                $test_result = array(
+                    'success' => false,
+                    'message' => 'Error: ' . $e->getMessage()
+                );
+            }
         }
 
         // Handle fetch sites
         if (isset($_POST['fetch_sites']) && wp_verify_nonce($_POST['maintenance_monday_nonce'], 'maintenance_monday_settings')) {
-            $sites_result = $this->api->get_sites();
+            try {
+                $sites_result = $this->api->get_sites();
+            } catch (Exception $e) {
+                $sites_result = array(
+                    'success' => false,
+                    'message' => 'Error: ' . $e->getMessage()
+                );
+            }
         }
 
         // Enqueue scripts for settings page
@@ -75,6 +89,21 @@ class MaintenanceMonday_Settings {
         ?>
         <div class="wrap">
             <h1><?php _e('Maintenance Monday Settings', 'maintenance-monday'); ?></h1>
+            
+            <?php
+            // Debug information
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                echo '<div class="notice notice-info is-dismissible">';
+                echo '<p><strong>Debug Info:</strong></p>';
+                echo '<ul>';
+                echo '<li>API Class: ' . (class_exists('MaintenanceMonday_API') ? 'Loaded' : 'Not Loaded') . '</li>';
+                echo '<li>API Instance: ' . (isset($this->api) ? 'Created' : 'Not Created') . '</li>';
+                echo '<li>API Methods: ' . (method_exists($this->api, 'test_connection') ? 'test_connection exists' : 'test_connection missing') . '</li>';
+                echo '<li>API Methods: ' . (method_exists($this->api, 'get_sites') ? 'get_sites exists' : 'get_sites missing') . '</li>';
+                echo '</ul>';
+                echo '</div>';
+            }
+            ?>
 
             <?php if (isset($test_result)): ?>
                 <div class="notice <?php echo $test_result['success'] ? 'notice-success' : 'notice-error'; ?> is-dismissible">
